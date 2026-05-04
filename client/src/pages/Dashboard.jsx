@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import Sidebar from "./sidebar";
+import Sidebar from "./Sidebar";
 
 function Dashboard() {
   const [notes, setNotes] = useState([]);
