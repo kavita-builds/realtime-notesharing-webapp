@@ -28,6 +28,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
 app.use("/api/admin", adminRoutes);
 
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
+
 // DB
 mongoose.connect("mongodb://127.0.0.1:27017/notesapp")
   .then(() => console.log("✅ MongoDB Connected"))
