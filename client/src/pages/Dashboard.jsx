@@ -1,16 +1,15 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Sidebar from "./Sidebar";
+import API from "../api";
 
 function Dashboard() {
   const [notes, setNotes] = useState([]);
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const BASE_URL = "https://realtime-notesharing-webapp.onrender.com";
 
-
-  
   // 🔥 Decode user from token
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -30,7 +29,7 @@ function Dashboard() {
   // 🔥 Fetch notes
   const fetchNotes = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/notes/all");
+      const res = await API.get("/api/notes/all");
       setNotes(res.data);
     } catch (err) {
       console.log(err);
@@ -39,27 +38,16 @@ function Dashboard() {
     }
   };
 
-  // 🔥 Delete note (with token)
-const handleDelete = async (id) => {
-  try {
-    const token = localStorage.getItem("token");
-
-    await axios.delete(
-      `http://localhost:5000/api/notes/${id}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ FIX
-        },
-      }
-    );
-
-    setNotes((prev) => prev.filter((note) => note._id !== id));
-
-  } catch (err) {
-    alert("Delete failed");
-    console.log(err);
-  }
-};
+  // 🔥 Delete note
+  const handleDelete = async (id) => {
+    try {
+      await API.delete(`/api/notes/${id}`);
+      setNotes((prev) => prev.filter((note) => note._id !== id));
+    } catch (err) {
+      alert("Delete failed");
+      console.log(err);
+    }
+  };
 
   return (
     <div className="flex bg-gray-100 h-screen overflow-hidden">
@@ -70,14 +58,14 @@ const handleDelete = async (id) => {
         {/* 🔝 Top Bar */}
         <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow">
           <input
-            className="w-1/2 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-1/2 px-4 py-2 border rounded-lg"
             type="text"
             placeholder="Search notes..."
           />
 
           <Link
             to="/Uploadnotes"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg"
           >
             + Upload Notes
           </Link>
@@ -86,7 +74,7 @@ const handleDelete = async (id) => {
         {/* 👋 Welcome */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-xl shadow">
           <h1 className="text-2xl font-bold">Welcome back 👋</h1>
-          <p className="opacity-90">Total Notes: {notes.length}</p>
+          <p>Total Notes: {notes.length}</p>
         </div>
 
         {/* ⏳ Loading */}
@@ -94,37 +82,29 @@ const handleDelete = async (id) => {
           <p className="text-center text-gray-500">Loading notes...</p>
         )}
 
-        {/* ❌ Empty State */}
+        {/* ❌ Empty */}
         {!loading && notes.length === 0 && (
           <div className="text-center text-gray-500">
             <p>No notes found</p>
           </div>
         )}
 
-        {/* 📄 Notes List */}
+        {/* 📄 Notes */}
         <div className="grid md:grid-cols-2 gap-4">
 
           {notes.map((note) => (
-            <div
-              key={note._id}
-              className="bg-white p-5 rounded-xl shadow hover:shadow-lg transition"
-            >
-              {/* Title */}
-              <h1 className="text-lg font-semibold text-gray-800">
-                {note.title}
-              </h1>
+            <div key={note._id} className="bg-white p-5 rounded-xl shadow">
 
-              {/* Description */}
+              <h1 className="text-lg font-semibold">{note.title}</h1>
+
               <p className="text-gray-500 text-sm mt-1">
                 {note.description}
               </p>
 
-              {/* Owner */}
               <p className="text-xs text-gray-400 mt-2">
                 By: {note.user?.name || "Unknown"}
               </p>
 
-              {/* Bottom */}
               <div className="flex justify-between items-center mt-4">
 
                 <span className="text-xs text-gray-400">
@@ -141,7 +121,6 @@ const handleDelete = async (id) => {
                     View
                   </Link>
 
-                  {/* 🔥 Only owner */}
                   {note.user?._id === userId && (
                     <>
                       <Link
@@ -163,10 +142,10 @@ const handleDelete = async (id) => {
                 </div>
               </div>
 
-              {/* 📎 File Download */}
+              {/* 📎 FILE DOWNLOAD FIX */}
               {note.fileUrl && (
                 <a
-                  href={`http://localhost:5000${note.fileUrl}`}
+                  href={`${BASE_URL}${note.fileUrl}`}
                   target="_blank"
                   rel="noreferrer"
                   className="block mt-3 text-sm text-green-600 hover:underline"
@@ -174,6 +153,7 @@ const handleDelete = async (id) => {
                   📥 Download PDF
                 </a>
               )}
+
             </div>
           ))}
 

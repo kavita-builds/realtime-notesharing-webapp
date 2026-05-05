@@ -1,7 +1,7 @@
 import Sidebar from "./Sidebar";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import API from "../api";
 
 function Edit() {
   const { id } = useParams();
@@ -15,38 +15,29 @@ function Edit() {
   useEffect(() => {
     const fetchNote = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/notes/${id}`
-        );
+        const res = await API.get(`/api/notes/${id}`);
 
         setTitle(res.data.title);
         setDescription(res.data.description);
-        setLoading(false);
-
       } catch (err) {
         console.log(err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchNote();
   }, [id]);
 
-  // 🔥 UPDATE NOTE (WITH TOKEN)
+  // 🔥 Update note
   const handleUpdate = async (e) => {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("token");
-
-      await axios.put(
-        `http://localhost:5000/api/notes/${id}`,
-        { title, description },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // ✅ IMPORTANT
-          },
-        }
-      );
+      await API.put(`/api/notes/${id}`, {
+        title,
+        description,
+      });
 
       alert("✅ Note updated");
       navigate("/dashboard");

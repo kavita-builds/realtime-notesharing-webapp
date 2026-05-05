@@ -1,13 +1,11 @@
 import Sidebar from "./Sidebar";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../api";
 
 function Admindashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [users, setUsers] = useState([]);
   const [notes, setNotes] = useState([]);
-
-  const token = localStorage.getItem("token");
 
   // 🔥 Fetch data
   useEffect(() => {
@@ -18,14 +16,7 @@ function Admindashboard() {
   // ================= USERS =================
   const fetchUsers = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/admin/users",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // ✅ FIX
-          },
-        }
-      );
+      const res = await API.get("/api/admin/users");
       setUsers(res.data);
     } catch (err) {
       console.log(err);
@@ -34,17 +25,8 @@ function Admindashboard() {
 
   const deleteUser = async (id) => {
     try {
-      await axios.delete(
-        `http://localhost:5000/api/admin/users/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      await API.delete(`/api/admin/users/${id}`);
       setUsers((prev) => prev.filter((u) => u._id !== id));
-
     } catch (err) {
       alert("Delete failed");
     }
@@ -53,14 +35,7 @@ function Admindashboard() {
   // ================= NOTES =================
   const fetchNotes = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:5000/api/admin/notes",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // ✅ FIX
-          },
-        }
-      );
+      const res = await API.get("/api/admin/notes");
       setNotes(res.data);
     } catch (err) {
       console.log(err);
@@ -69,17 +44,8 @@ function Admindashboard() {
 
   const deleteNote = async (id) => {
     try {
-      await axios.delete(
-        `http://localhost:5000/api/admin/notes/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      await API.delete(`/api/admin/notes/${id}`);
       setNotes((prev) => prev.filter((n) => n._id !== id));
-
     } catch (err) {
       alert("Delete failed");
     }
@@ -122,7 +88,7 @@ function Admindashboard() {
             ))}
           </div>
 
-          {/* ================= OVERVIEW ================= */}
+          {/* OVERVIEW */}
           {activeTab === "overview" && (
             <div className="grid md:grid-cols-4 gap-6 mt-6">
               <StatCard title="Total Users" value={users.length} />
@@ -130,16 +96,13 @@ function Admindashboard() {
             </div>
           )}
 
-          {/* ================= USERS ================= */}
+          {/* USERS */}
           {activeTab === "users" && (
             <div className="bg-white p-6 rounded-xl shadow mt-6">
               <h2 className="text-xl font-semibold mb-4">All Users</h2>
 
               {users.map((user) => (
-                <div
-                  key={user._id}
-                  className="flex justify-between py-3 border-b"
-                >
+                <div key={user._id} className="flex justify-between py-3 border-b">
                   <div>
                     <p>{user.name}</p>
                     <p className="text-sm text-gray-500">{user.email}</p>
@@ -156,16 +119,13 @@ function Admindashboard() {
             </div>
           )}
 
-          {/* ================= NOTES ================= */}
+          {/* NOTES */}
           {activeTab === "notes" && (
             <div className="bg-white p-6 rounded-xl shadow mt-6">
               <h2 className="text-xl font-semibold mb-4">All Notes</h2>
 
               {notes.map((note) => (
-                <div
-                  key={note._id}
-                  className="flex justify-between py-3 border-b"
-                >
+                <div key={note._id} className="flex justify-between py-3 border-b">
                   <div>
                     <p>{note.title}</p>
                     <p className="text-sm text-gray-500">

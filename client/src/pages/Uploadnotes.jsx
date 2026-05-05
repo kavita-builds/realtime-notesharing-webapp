@@ -1,7 +1,7 @@
 import Sidebar from "./Sidebar";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import API from "../api"; // ✅ use central API
 
 function Uploadnotes() {
   const [mode, setMode] = useState("write");
@@ -26,12 +26,6 @@ function Uploadnotes() {
         return;
       }
 
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ FIXED (COMMON FOR BOTH)
-        },
-      };
-
       // ================= WRITE MODE =================
       if (mode === "write") {
         if (!content.trim()) {
@@ -39,16 +33,12 @@ function Uploadnotes() {
           return;
         }
 
-        await axios.post(
-          "http://localhost:5000/api/notes/create",
-          {
-            title,
-            description,
-            content,
-            tags,
-          },
-          config
-        );
+        await API.post("/api/notes/create", {
+          title,
+          description,
+          content,
+          tags,
+        });
       }
 
       // ================= UPLOAD MODE =================
@@ -64,16 +54,11 @@ function Uploadnotes() {
         formData.append("tags", tags);
         formData.append("file", file);
 
-        await axios.post(
-          "http://localhost:5000/api/notes/upload",
-          formData,
-          {
-            headers: {
-              ...config.headers,
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        await API.post("/api/notes/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
       }
 
       alert("✅ Uploaded successfully");

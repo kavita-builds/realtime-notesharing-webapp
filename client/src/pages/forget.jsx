@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import API from "../api";
 
 function Forget() {
   const [email, setEmail] = useState("");
@@ -8,14 +8,11 @@ function Forget() {
 
   const handleSend = async () => {
     try {
-      await axios.post(
-        "http://localhost:5000/api/auth/forget",
-        { email }
-      );
+      await API.post("/api/auth/forget", { email });
 
       alert("✅ OTP sent to your email");
 
-      // go to verification page with email
+      // go to verification page
       navigate("/verification", { state: { email } });
 
     } catch (err) {

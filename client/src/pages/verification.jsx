@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import API from "../api"; // ✅ use central API
 
 function Verification() {
   const [otp, setOtp] = useState("");
@@ -11,7 +11,7 @@ function Verification() {
 
   const handleVerify = async () => {
     try {
-      await axios.post("http://localhost:5000/api/auth/verify-otp", {
+      await API.post("/api/auth/verify-otp", {
         email,
         otp,
       });

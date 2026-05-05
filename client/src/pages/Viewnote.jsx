@@ -1,13 +1,14 @@
 import Sidebar from "./Sidebar";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api"; // ✅ use central API
 
 function Viewnote() {
   const { id } = useParams();
   const [note, setNote] = useState(null);
 
-  const BASE_URL = "http://localhost:5000";
+  // ✅ backend base URL for files
+  const BASE_URL = "https://realtime-notesharing-webapp.onrender.com";
 
   useEffect(() => {
     fetchNote();
@@ -15,7 +16,7 @@ function Viewnote() {
 
   const fetchNote = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/notes/${id}`);
+      const res = await API.get(`/api/notes/${id}`);
       setNote(res.data);
     } catch (err) {
       console.log(err);

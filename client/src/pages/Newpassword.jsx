@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import API from "../api";
 
 function Newpassword() {
   const [password, setPassword] = useState("");
@@ -10,14 +10,18 @@ function Newpassword() {
   const email = location.state?.email;
 
   const handleSubmit = async () => {
+    if (!password) {
+      alert("Password is required");
+      return;
+    }
+
     try {
-      await axios.post("http://localhost:5000/api/auth/reset", {
+      await API.post("/api/auth/reset", {
         email,
         password,
       });
 
       alert("✅ Password updated successfully");
-
       navigate("/login");
 
     } catch (err) {
@@ -36,6 +40,7 @@ function Newpassword() {
         <input
           type="password"
           placeholder="Enter new password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="border p-2 mt-4 w-full rounded"
         />
