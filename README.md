@@ -1,2 +1,2 @@
 LIVE LINK 
-curious-baklava.netlify.app
+https://curious-baklava.netlify.app/
